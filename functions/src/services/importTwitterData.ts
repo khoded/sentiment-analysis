@@ -7,7 +7,7 @@ type Payload = {
 const jsonToFirestore = async (urlPath: Payload ): Promise<string | void> => {
   try {
     const backupData = await request(urlPath.url);
-    await restore(backupData);
+    await restore(JSON.parse(backupData));
     return "upload successful";
   } catch (error) {
     console.log(error);

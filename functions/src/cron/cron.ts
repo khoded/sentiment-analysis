@@ -10,21 +10,26 @@ export const scheduledSentimentAnalysisCron = functions.pubsub.schedule("*/5 * *
     const querySnapshot = await db.collection("dataSets").get();
     querySnapshot.forEach(async (doc: any) => {
       const docData = doc.data();
-      const score = sentiment.classify(docData.tweet);
+      const sentimentScore = sentiment.classify(docData.tweet);
       const currentDoc = db.collection("dataSets").doc(doc.id);
-      if (score < 0 ) {
-        const twitterDataObject = {
-          score: "negative",
-          value: score,
-        };
-        await currentDoc.set(twitterDataObject);
+      let score;
+      let value;
+      const convertedScore = sentimentScore *1;
+      if (convertedScore < 0 ) {
+        score = "negative";
+        value = score;
+      } else if (convertedScore > 0) {
+        score = "postive";
+        value = score;
       } else {
-        const twitterDataObject = {
-          score: "postive",
-          value: score,
-        };
-        await currentDoc.set(twitterDataObject);
+        score = "neutral";
+        value = score;
       }
+      const twitterDataObject ={
+        score: score,
+        value: value,
+      };
+      await currentDoc.set(twitterDataObject);
       console.log("Running Cron function end .");
       return null;
     });

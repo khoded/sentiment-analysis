@@ -27,7 +27,7 @@ const importTwitterData = async (req: importPayload, res: Response): Promise<any
     const jsonData = await jsonToFirestore(payload);
     res.status(200).json(jsonData);
   } catch (error) {
-    res.status(500).json(error.message);
+    res.status(500).json(error);
   }
 };
 

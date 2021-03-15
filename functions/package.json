@@ -14,11 +14,13 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@types/shortid": "0.0.29",
     "firebase-admin": "^9.2.0",
     "firebase-functions": "^3.11.0",
     "firestore-export-import": "^0.13.0",
     "request": "^2.88.2",
-    "request-promise": "^4.2.6"
+    "request-promise": "^4.2.6",
+    "shortid": "^2.2.16"
   },
   "devDependencies": {
     "@types/request-promise": "^4.1.47",

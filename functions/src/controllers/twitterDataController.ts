@@ -124,10 +124,11 @@ const analyseData = async (req: Request, res: Response): Promise<any> => {
   let score; let value;
   try {
     const sentimentScore = sentiment.classify(tweet);
-    if (sentimentScore < 0 ) {
+    const convertedScore = sentimentScore *1;
+    if (convertedScore < 0 ) {
       score = "negative";
       value = score;
-    } else if (sentimentScore > 0) {
+    } else if (convertedScore > 0) {
       score = "positive";
       value = score;
     } else {

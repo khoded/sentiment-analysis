@@ -2,10 +2,13 @@
 import {Response} from "express";
 import {db} from "../config/firebase";
 import {jsonToFirestore} from "../services/importTwitterData";
+import * as sentiment from "ml-sentiment";
 
 type dataType = {
   source: string,
   tweet: string,
+  score: string,
+
 }
 
 type payload = {
@@ -116,4 +119,38 @@ const deleteTwitterData = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
-export {addTwitterData, getAllEntries, updateTwitterData, deleteTwitterData, importTwitterData};
+const analyseData = async (req: Request, res: Response): Promise<any> => {
+  const {source, tweet} = req.body;
+  let score; let value;
+  try {
+    const sentimentScore = sentiment.classify(tweet);
+    if (sentimentScore < 0 ) {
+      score = "negative";
+      value = score;
+    } else if (sentimentScore > 0) {
+      score = "positive";
+      value = score;
+    } else {
+      score = "neutral";
+      value = score;
+    }
+    const twitterData = db.collection("dataSets").doc();
+    const twitterDataObject = {
+      id: twitterData.id,
+      source,
+      tweet,
+      score,
+      value,
+    };
+    twitterData.set(twitterDataObject);
+
+    res.status(200).send({
+      status: "success",
+      message: "twitterData added sentiment analysed successfully",
+      data: twitterDataObject,
+    });
+  } catch (error) {
+    res.status(500).json(error.message);
+  }
+};
+export {addTwitterData, getAllEntries, updateTwitterData, deleteTwitterData, importTwitterData, analyseData};

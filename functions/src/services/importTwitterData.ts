@@ -1,5 +1,6 @@
 import * as request from "request-promise";
 import {db} from "../config/firebase";
+
 const batch = db.batch();
 
 type Payload = {

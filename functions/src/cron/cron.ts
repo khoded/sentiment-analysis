@@ -35,14 +35,16 @@ export const scheduledSentimentAnalysisCron = functions.pubsub.schedule("every 5
         value = convertedScore;
       }
       const twitterDataObject ={
+        source: docData.source,
+        tweet: docData.tweet,
         score: score,
         value: value,
         analysed: true,
       };
       await currentDoc.set(twitterDataObject);
-      console.log("Running Cron function end .");
-      return null;
     });
+    console.log("Running Cron function end .");
+    return null;
   } catch (error) {
     return error.message;
   }

@@ -17,6 +17,7 @@ const jsonToFirestore = async (urlPath: Payload ): Promise<any> => {
       const twitterDataObject = {
         source: data.source,
         tweet: data.tweet,
+        analysed: false,
       };
       batch.set(twitterData, twitterDataObject);
     }

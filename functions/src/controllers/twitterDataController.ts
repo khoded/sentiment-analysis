@@ -14,7 +14,7 @@ type dataType = {
   source: string,
   tweet: string,
   score: string,
-
+  analysed: boolean,
 }
 
 type payload = {
@@ -48,6 +48,7 @@ const addTwitterData = async (req: Request, res: Response): Promise<any> => {
       id: twitterData.id,
       source,
       tweet,
+      analysed: false,
     };
 
     twitterData.set(twitterDataObject);
@@ -150,6 +151,7 @@ const analyseData = async (req: Request, res: Response): Promise<any> => {
       tweet,
       score,
       value,
+      analysed: true,
     };
     twitterData.set(twitterDataObject);
 

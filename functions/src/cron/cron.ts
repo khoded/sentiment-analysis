@@ -11,7 +11,7 @@ const tokenizer = new WordTokenizer();
 const analyzer = new SentimentAnalyzer("English", PorterStemmer, "afinn");
 
 
-export const scheduledSentimentAnalysisCron = functions.pubsub.schedule("*/5 * * * *").onRun(async (context) =>{
+export const scheduledSentimentAnalysisCron = functions.pubsub.schedule("every 5 minutes").onRun(async (context) =>{
   console.log("Running function at minute 0 past every hour.");
   try {
     const querySnapshot = await db.collection("dataSets").get();
@@ -26,17 +26,18 @@ export const scheduledSentimentAnalysisCron = functions.pubsub.schedule("*/5 * *
       const convertedScore = sentimentScore *1;
       if (convertedScore < 0 ) {
         score = "negative";
-        value = score;
+        value = convertedScore;
       } else if (convertedScore > 0) {
         score = "postive";
-        value = score;
+        value = convertedScore;
       } else {
         score = "neutral";
-        value = score;
+        value = convertedScore;
       }
       const twitterDataObject ={
         score: score,
         value: value,
+        analysed: true,
       };
       await currentDoc.set(twitterDataObject);
       console.log("Running Cron function end .");

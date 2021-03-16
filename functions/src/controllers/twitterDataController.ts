@@ -135,13 +135,13 @@ const analyseData = async (req: Request, res: Response): Promise<any> => {
     const convertedScore = sentimentScore *1;
     if (convertedScore < 0 ) {
       score = "negative";
-      value = score;
+      value = convertedScore;
     } else if (convertedScore > 0) {
       score = "positive";
-      value = score;
+      value = convertedScore;
     } else {
       score = "neutral";
-      value = score;
+      value = convertedScore;
     }
     const twitterData = db.collection("dataSets").doc();
     const twitterDataObject = {

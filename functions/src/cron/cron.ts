@@ -14,7 +14,7 @@ const analyzer = new SentimentAnalyzer("English", PorterStemmer, "afinn");
 export const scheduledSentimentAnalysisCron = functions.pubsub.schedule("every 5 minutes").onRun(async (context) =>{
   console.log("Running function at minute 0 past every hour.");
   try {
-    const querySnapshot = await db.collection("dataSets").get();
+    const querySnapshot = await db.collection("dataSets").where("analysed", "==", false).get();
     querySnapshot.forEach(async (doc: any) => {
       const docData = doc.data();
       const tokenizedReview = tokenizer.tokenize(docData.tweet);

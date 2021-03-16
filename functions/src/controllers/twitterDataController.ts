@@ -16,6 +16,9 @@ type dataType = {
   score: string,
   analysed: boolean,
 }
+type analyze = {
+  text: string,
+}
 
 type payload = {
     url: string
@@ -24,6 +27,10 @@ type payload = {
 type Request = {
   body: dataType,
   params: { twitterDataId: string }
+}
+
+type textAnalyze = {
+  body: analyze
 }
 
 type importPayload = {
@@ -164,4 +171,21 @@ const analyseData = async (req: Request, res: Response): Promise<any> => {
     res.status(500).json(error.message);
   }
 };
-export {addTwitterData, getAllEntries, updateTwitterData, deleteTwitterData, importTwitterData, analyseData};
+
+const analyzeText = async (req: textAnalyze, res: Response): Promise<any> => {
+  const {text} = req.body;
+  try {
+    const tokenizedReview = tokenizer.tokenize(text);
+    const filteredReview = sw.removeStopwords(tokenizedReview);
+    const sentimentScore = analyzer.getSentiment(filteredReview);
+    const convertedScore = sentimentScore *1;
+    res.status(200).send({
+      status: "success",
+      message: "twitterData added sentiment analysed successfully",
+      data: convertedScore,
+    });
+  } catch (error) {
+    res.status(500).json(error.message);
+  }
+};
+export {addTwitterData, getAllEntries, updateTwitterData, deleteTwitterData, importTwitterData, analyseData, analyzeText};

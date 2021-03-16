@@ -2,7 +2,13 @@
 import {Response} from "express";
 import {db} from "../config/firebase";
 import {jsonToFirestore} from "../services/importTwitterData";
-import * as sentiment from "ml-sentiment";
+import * as nlp from "natural";
+import * as sw from "stopword";
+
+const {SentimentAnalyzer, PorterStemmer} = nlp;
+const {WordTokenizer} = nlp;
+const tokenizer = new WordTokenizer();
+const analyzer = new SentimentAnalyzer("English", PorterStemmer, "afinn");
 
 type dataType = {
   source: string,
@@ -123,7 +129,9 @@ const analyseData = async (req: Request, res: Response): Promise<any> => {
   const {source, tweet} = req.body;
   let score; let value;
   try {
-    const sentimentScore = sentiment.classify(tweet);
+    const tokenizedReview = tokenizer.tokenize(tweet);
+    const filteredReview = sw.removeStopwords(tokenizedReview);
+    const sentimentScore = analyzer.getSentiment(filteredReview);
     const convertedScore = sentimentScore *1;
     if (convertedScore < 0 ) {
       score = "negative";

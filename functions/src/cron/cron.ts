@@ -2,7 +2,14 @@
 /* eslint-disable max-len */
 import * as functions from "firebase-functions";
 import {db} from "../config/firebase";
-import * as sentiment from "ml-sentiment";
+import * as nlp from "natural";
+import * as sw from "stopword";
+
+const {SentimentAnalyzer, PorterStemmer} = nlp;
+const {WordTokenizer} = nlp;
+const tokenizer = new WordTokenizer();
+const analyzer = new SentimentAnalyzer("English", PorterStemmer, "afinn");
+
 
 export const scheduledSentimentAnalysisCron = functions.pubsub.schedule("*/5 * * * *").onRun(async (context) =>{
   console.log("Running function at minute 0 past every hour.");
@@ -10,7 +17,9 @@ export const scheduledSentimentAnalysisCron = functions.pubsub.schedule("*/5 * *
     const querySnapshot = await db.collection("dataSets").get();
     querySnapshot.forEach(async (doc: any) => {
       const docData = doc.data();
-      const sentimentScore = sentiment.classify(docData.tweet);
+      const tokenizedReview = tokenizer.tokenize(docData.tweet);
+      const filteredReview = sw.removeStopwords(tokenizedReview);
+      const sentimentScore = analyzer.getSentiment(filteredReview);
       const currentDoc = db.collection("dataSets").doc(doc.id);
       let score;
       let value;
